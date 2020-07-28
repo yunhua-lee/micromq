@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>MicroMQ test</title>
+</head>
+<body>
+<div>
+    <h1>Welcome to MicroMQ</h1>
+    <p th:text="'Server name: ' + ${serverName}"/>
+    <button onclick="startServer()">Start</button>
+    <button onclick="stopServer()">Stop</button>
+</div>
+    <h2>Try to push or pull</h2>
+    client: <input type="text" id="clientName" />
+    <div>
+        queue name：<input type="text" id="queueName" /> message id：<input type="text" id="messageId" />
+        <button onclick="pull()">Pull</button>
+    </div>
+    <div>
+        queue name：<input type="text" id="queueName2" /> content: <input type="text" id="content" />
+        <button onclick="push()">Push</button>
+    </div>
+<hr align="left" width="600" color="#987cb9" size="1" />
+<div>
+    <textarea id="result" rows="5" cols="80"></textarea>
+</div>
+<script th:inline="javascript">
+// <![CDATA[
+    function startServer(){
+        var sign = [[${adminSign}]];
+        var requestId = Math.floor(Math.random() * 10000) + 10000;
+
+        var url = '/admin';
+        var param = '?client=admin&requestId=' + requestId + '&operation=start' + '&sign=' + sign;
+
+        console.log(param);
+
+        var httpRequest = new XMLHttpRequest();
+        httpRequest.open('GET', url + param, true);
+        httpRequest.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+        httpRequest.send();
+
+        httpRequest.onreadystatechange = function () {
+            document.getElementById('result').value = httpRequest.responseText;
+        };
+    }
+
+    function stopServer(){
+        var sign = [[${adminSign}]];
+        var requestId = Math.floor(Math.random() * 10000) + 10000;
+
+        var url = '/admin';
+        var param = '?client=admin' + '&requestId=' + requestId + '&operation=stop' + '&sign=' + sign;
+
+        console.log(param);
+
+        var httpRequest = new XMLHttpRequest();
+        httpRequest.open('GET', url + param, true);
+        httpRequest.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+        httpRequest.send();
+
+        httpRequest.onreadystatechange = function () {
+            document.getElementById('result').value = httpRequest.responseText;
+        };
+    }
+
+    function pull(){
+        var sign = [[${testSign}]];
+        var requestId = Math.floor(Math.random() * 10000) + 10000;
+        var clientName = document.getElementById('clientName').value;
+        var queueName = document.getElementById('queueName').value;
+        var msgId = document.getElementById('messageId').value;
+
+        var url = '/queues/' + queueName + '/messages/' + msgId;
+        var param = '?requestId=' + requestId + '&client=' + clientName + '&sign=' + sign;
+
+        console.log(param);
+
+        var httpRequest = new XMLHttpRequest();
+        httpRequest.open('GET', url + param, true);
+        httpRequest.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+        httpRequest.send();
+
+        httpRequest.onreadystatechange = function () {
+            document.getElementById('result').value = httpRequest.responseText;
+        };
+    }
+
+    function push(){
+        var sign = [[${testSign}]];
+        var requestId = Math.floor(Math.random() * 10000) + 10000;
+        var clientName = document.getElementById('clientName').value;
+        var queueName = document.getElementById('queueName2').value;
+        var content = document.getElementById('content').value;
+
+        var url = '/queues/' + queueName + '/messages';
+        var data = {};
+        data.requestId = requestId;
+        data.client = clientName;
+        data.sign = sign;
+        data.content = content;
+
+        console.log(data);
+
+        var httpRequest = new XMLHttpRequest();
+        httpRequest.open('POST', url, true);
+        httpRequest.setRequestHeader("Content-type","application/json;charset=utf-8");
+        httpRequest.send(JSON.stringify(data));
+
+        httpRequest.onreadystatechange = function () {
+            document.getElementById('result').value = httpRequest.responseText;
+        };
+    }
+// ]]>
+</script>
+</body>
+</html>

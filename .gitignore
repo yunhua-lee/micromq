@@ -1,0 +1,14 @@
+/target/
+/out/
+/bin/*.jar
+/log/
+.classpath
+.project
+.settings
+.idea
+*.iml
+*.jar
+*.war
+*.ear
+
+
