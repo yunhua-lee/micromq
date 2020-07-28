@@ -1,12 +1,12 @@
 # Background
-MicroMQ is a lightweight message queue system whose code lines are only about 3K. This project is aimed to help those programmer beginner learn how to build a complete system which will include storage, HTTP interface, configuration, background task, and so on.
-It is base on Spring Boot, and uses MySQL as default storage. You can also extend it to use other storage like Redis.
+MicroMQ is a lightweight message queue system whose code lines are only about 3K. This project is aimed to help those programmer beginners learn how to build a complete system which may include storage, HTTP interface, configuration, background task, and so on.
+It is base on Spring Boot, and uses MySQL as default storage. You can also extend it to use other storages like Redis.
 
 # Install
-It is a learning project, and not well tested. If you want to deploy it on production environment, please completely test it first. You can learn it, run it, modify it by using IDEA and maven. Just import it into IDEA and try it as you will.
+It is a learning project, and not well tested. If you want to deploy it on production environment, please completely test it first. You can learn it, run it, modify it by using IDEA and maven. Just import it into IDEA and try it as your will.
 
 # Usage
-1. install mysql, and create necessary tables, SQL can be found under directory './src/main/resources/script/MicroMQ.sql'
+1. install mysql, and create necessary tables, SQL script file can be found under directory './src/main/resources/script/MicroMQ.sql'
 2. use maven or IDEA to build the project
 3. change the configuration under directory './src/main/resources/config'
 4. run the project through IDEA, main class is: MQBootstrap
