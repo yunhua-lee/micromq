@@ -1,5 +1,7 @@
 package io.micromq.config;
 
+import io.micromq.config.option.MQIntOption;
+import io.micromq.config.option.MQOption;
 import org.apache.commons.lang3.Validate;
 
 public final class PrivilegeConfig implements ConfigSource.Listener {
@@ -37,13 +39,12 @@ public final class PrivilegeConfig implements ConfigSource.Listener {
     }
 
     private Boolean hasPrivilege(String client, String queue, String privilege) {
-        Validate.notBlank(client, "client is blank");
-        Validate.notBlank(queue, "queue is blank");
-
         String key = client + "." + queue + "." + privilege;
 
-        int value = source.getConfig(CONFIG_TYPE).getInt(key, 0);
+        MQOption<Integer> option = new MQIntOption().withName(key)
+                .withCategory(CONFIG_TYPE).withDescription("client has queue privilege or not")
+                .withDefaultValue(0).withMinValue(0).withMaxValue(1).parse(source);
 
-        return value == 1;
+        return option.value() == 1;
     }
 }

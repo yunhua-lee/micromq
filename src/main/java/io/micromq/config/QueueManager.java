@@ -1,5 +1,7 @@
 package io.micromq.config;
 
+import io.micromq.config.option.MQIntOption;
+import io.micromq.config.option.MQOption;
 import io.micromq.queue.MQQueue;
 import org.apache.commons.lang3.Validate;
 
@@ -56,30 +58,34 @@ public final class QueueManager implements ConfigSource.Listener{
     }
 
     private int getQueueAckMode(String queue) {
-        int mode = source.getConfig(CONFIG_TYPE).getInteger(queue + ".ackMode", 1);
+        MQOption<Integer> option = new MQIntOption().withName(queue + ".ackMode")
+                .withCategory(CONFIG_TYPE).withDescription("queue ack mode")
+                .withDefaultValue(1).withMinValue(PULL_WITHOUT_ACK).withMaxValue(PULL_WITH_ACK).parse(source);
 
-        Validate.inclusiveBetween(PULL_WITHOUT_ACK, PULL_WITH_ACK, mode);
-        return mode;
+        return option.value();
     }
 
     private int getQueueAckTimeout(String queue) {
-        int timeout = source.getConfig(CONFIG_TYPE).getInteger(queue + ".ackTimeout", 3);
+        MQOption<Integer> option = new MQIntOption().withName(queue + ".ackTimeout")
+                .withCategory(CONFIG_TYPE).withDescription("queue ack timeout threshold")
+                .withDefaultValue(3).withMinValue(1).withMaxValue(30).parse(source);
 
-        Validate.inclusiveBetween(1, 30, timeout, "ackTimeout should be between 1 and 30 seconds");
-        return timeout;
+        return option.value();
     }
 
     private int getQueueSaveMode(String queue){
-        String key = queue + "." + "savingMode";
-        int mode = source.getConfig(CONFIG_TYPE).getInt(key, ASYNC_SAVE);
-        Validate.inclusiveBetween(0, 1, mode, "savingMode should be 0(ASYNC_SAVE) or 1(SYNC_SAVE)");
+        MQOption<Integer> option = new MQIntOption().withName(queue + "." + "savingMode")
+                .withCategory(CONFIG_TYPE).withDescription("queue saving mode")
+                .withDefaultValue(ASYNC_SAVE).withMinValue(0).withMaxValue(1).parse(source);
 
-        return mode;
+        return option.value();
     }
 
     private Boolean isActive(String queue) {
-        int queueState = source.getConfig(CONFIG_TYPE).getInt(queue + ".active", 0);
+        MQOption<Integer> option = new MQIntOption().withName(queue + ".active")
+                .withCategory(CONFIG_TYPE).withDescription("queue is active or not")
+                .withDefaultValue(0).withMinValue(0).withMaxValue(1).parse(source);
 
-        return queueState == 1;
+        return option.value() == 1;
     }
 }

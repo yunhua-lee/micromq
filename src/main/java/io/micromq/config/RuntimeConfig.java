@@ -1,5 +1,7 @@
 package io.micromq.config;
 
+import io.micromq.config.option.MQIntOption;
+import io.micromq.config.option.MQOption;
 import io.micromq.log.MQLog;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
@@ -13,8 +15,6 @@ public final class RuntimeConfig implements ConfigSource.Listener {
     public static final String ASYNC_MESSAGE_SAVING_PERIOD = "server.asyncMessageSavingPeriod";
     public static final String RECEIPT_SAVING_PERIOD = "server.receiptSavingPeriod";
     public static final String MESSAGE_EXPIRE_HOURS = "server.messageExpireHours";
-
-    public static final int DEFAULT_PORT = 8080;
 
     public static final String CONFIG_TYPE = "runtime";
     private static volatile RuntimeConfig instance;
@@ -48,47 +48,53 @@ public final class RuntimeConfig implements ConfigSource.Listener {
             defaultValue = processorNumber;
         }
 
-        int number = source.getConfig(CONFIG_TYPE).getInt(ASYNC_MESSAGE_SAVING_THREAD_NUMBER, defaultValue);
-        Validate.inclusiveBetween(1, 64, number, ASYNC_MESSAGE_SAVING_THREAD_NUMBER + " should be between 1 and 64");
+        MQOption<Integer> option = new MQIntOption().withName(ASYNC_MESSAGE_SAVING_THREAD_NUMBER)
+                .withCategory(CONFIG_TYPE).withDescription("async message saving thread number")
+                .withDefaultValue(defaultValue).withMinValue(1).withMaxValue(64).parse(source);
 
-        return number;
+        return option.value();
     }
 
     public int getAsyncMessageSavingRate() {
         int threadNumber = getAsyncMessageSavingThreadNumber();
         int defaultValue = 20000 / threadNumber;
 
-        int rate = source.getConfig(CONFIG_TYPE).getInt(ASYNC_MESSAGE_SAVING_RATE, defaultValue);
-        Validate.inclusiveBetween(100, 20000, rate, ASYNC_MESSAGE_SAVING_RATE + " should be between 100 and 20000");
-        if (rate > 1000) {
+        MQOption<Integer> option = new MQIntOption().withName(ASYNC_MESSAGE_SAVING_RATE)
+                .withCategory(CONFIG_TYPE).withDescription("async message saving rate")
+                .withDefaultValue(defaultValue).withMinValue(100).withMaxValue(20000).parse(source);
+
+        if (option.value() > 1000) {
             MQLog log = MQLog.build("Too large rate may cause MySQL 'max_allowed_packet' related error")
                     .p("config", ASYNC_MESSAGE_SAVING_RATE)
-                    .p("value", rate);
+                    .p("value", option.value());
             logger.warn(log.toString());
         }
 
-        return rate;
+        return option.value();
     }
 
     public int getAsyncMessageSavingPeriod() {
-        int period = source.getConfig(CONFIG_TYPE).getInt(ASYNC_MESSAGE_SAVING_PERIOD, 1000);
-        Validate.inclusiveBetween(100, 2000, period, ASYNC_MESSAGE_SAVING_PERIOD + " should be between 100 and 2000(ms)");
+        MQOption<Integer> option = new MQIntOption().withName(ASYNC_MESSAGE_SAVING_PERIOD)
+                .withCategory(CONFIG_TYPE).withDescription("async message saving period")
+                .withDefaultValue(1000).withMinValue(100).withMaxValue(2000).parse(source);
 
-        return period;
+        return option.value();
     }
 
     public int getReceiptSavingPeriod() {
-        int period = source.getConfig(CONFIG_TYPE).getInt(RECEIPT_SAVING_PERIOD, 1000);
-        Validate.inclusiveBetween(100, 2000, period, RECEIPT_SAVING_PERIOD + " should be between 100 and 2000(ms)");
+        MQOption<Integer> option = new MQIntOption().withName(RECEIPT_SAVING_PERIOD)
+                .withCategory(CONFIG_TYPE).withDescription("receipt saving period")
+                .withDefaultValue(1000).withMinValue(100).withMaxValue(2000).parse(source);
 
-        return period;
+        return option.value();
     }
 
     public int getMessageExpireHours(){
-        int hours = source.getConfig(CONFIG_TYPE).getInt(MESSAGE_EXPIRE_HOURS, 48);
-        Validate.inclusiveBetween(24, 7* 24, hours, MESSAGE_EXPIRE_HOURS + " should be between 24 and 168(hours)");
+        MQOption<Integer> option = new MQIntOption().withName(MESSAGE_EXPIRE_HOURS)
+                .withCategory(CONFIG_TYPE).withDescription("message expired hours")
+                .withDefaultValue(48).withMinValue(24).withMaxValue(7 * 24).parse(source);
 
-        return hours;
+        return option.value();
     }
 }
 

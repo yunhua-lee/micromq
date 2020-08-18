@@ -2,6 +2,9 @@ package io.micromq.config;
 
 import io.micromq.client.MQClient;
 import io.micromq.common.MQException;
+import io.micromq.config.option.MQIntOption;
+import io.micromq.config.option.MQOption;
+import io.micromq.config.option.MQStringOption;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 
@@ -67,22 +70,23 @@ public final class ClientManager implements ConfigSource.Listener {
 
     private Boolean isActive(String name) {
         String clientName = formatName(name);
-
         String key = clientName + ".active";
-        int value = source.getConfig(CONFIG_TYPE).getInt(key, 0);
 
-        return value == 1;
+        MQOption<Integer> option = new MQIntOption().withName(key).withCategory(CONFIG_TYPE)
+                .withDescription("client is active or not").withDefaultValue(0)
+                .withMinValue(0).withMaxValue(1).parse(source);
+
+        return option.value() == 1;
     }
 
     private String getSignKey(String name) {
         String clientName = formatName(name);
-
         String signKey = clientName + "." + "signKey";
-        String value = source.getConfig(CONFIG_TYPE).getString(signKey);
 
-        Validate.notBlank(value, "'signKey' is blank");
+        MQOption<String> option = new MQStringOption().withName(signKey).withCategory(CONFIG_TYPE)
+                .withDescription("sign key for client").withNoDefaultValue().parse(source);
 
-        return value;
+        return option.value();
     }
 
     private String formatName(String name){
