@@ -14,10 +14,7 @@ package io.micromq.config.option;/*
  *  under the License.
  */
 
-import io.micromq.config.ConfigSource;
-
 public interface MQOption<T> {
-	String getCategory();
 	String getName();
 	String getDescription();
 	T value();

@@ -3,7 +3,6 @@ package io.micromq.config;
 import io.micromq.client.MQClient;
 import io.micromq.common.MQException;
 import io.micromq.config.option.MQIntOption;
-import io.micromq.config.option.MQOption;
 import io.micromq.config.option.MQStringOption;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -72,21 +71,21 @@ public final class ClientManager implements ConfigSource.Listener {
         String clientName = formatName(name);
         String key = clientName + ".active";
 
-        MQOption<Integer> option = new MQIntOption().withName(key).withCategory(CONFIG_TYPE)
+        return new MQIntOption().withName(key)
                 .withDescription("client is active or not").withDefaultValue(0)
-                .withMinValue(0).withMaxValue(1).parse(source);
-
-        return option.value() == 1;
+                .withMinValue(0).withMaxValue(1)
+                .parse(source.getConfig(CONFIG_TYPE))
+                .value() == 1;
     }
 
     private String getSignKey(String name) {
         String clientName = formatName(name);
         String signKey = clientName + "." + "signKey";
 
-        MQOption<String> option = new MQStringOption().withName(signKey).withCategory(CONFIG_TYPE)
-                .withDescription("sign key for client").withNoDefaultValue().parse(source);
-
-        return option.value();
+        return new MQStringOption().withName(signKey)
+                .withDescription("sign key for client").withNoDefaultValue()
+                .parse(source.getConfig(CONFIG_TYPE))
+                .value();
     }
 
     private String formatName(String name){

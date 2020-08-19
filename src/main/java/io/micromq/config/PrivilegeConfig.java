@@ -2,7 +2,6 @@ package io.micromq.config;
 
 import io.micromq.config.option.MQIntOption;
 import io.micromq.config.option.MQOption;
-import org.apache.commons.lang3.Validate;
 
 public final class PrivilegeConfig implements ConfigSource.Listener {
     private static final String PUBLISH_PRIVILEGE = "publish";
@@ -41,9 +40,9 @@ public final class PrivilegeConfig implements ConfigSource.Listener {
     private Boolean hasPrivilege(String client, String queue, String privilege) {
         String key = client + "." + queue + "." + privilege;
 
-        MQOption<Integer> option = new MQIntOption().withName(key)
-                .withCategory(CONFIG_TYPE).withDescription("client has queue privilege or not")
-                .withDefaultValue(0).withMinValue(0).withMaxValue(1).parse(source);
+        MQOption<Integer> option = new MQIntOption().withName(key).withDescription("client has queue privilege or not")
+                .withDefaultValue(0).withMinValue(0).withMaxValue(1)
+                .parse(source.getConfig(CONFIG_TYPE));
 
         return option.value() == 1;
     }

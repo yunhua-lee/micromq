@@ -1,7 +1,6 @@
 package io.micromq.config.option;
 
-import io.micromq.common.MQException;
-import io.micromq.config.ConfigSource;
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 
@@ -12,7 +11,6 @@ import org.apache.commons.lang3.Validate;
  */
 public abstract class AbstractMQOption<O extends AbstractMQOption<O, T>, T> implements MQOption<T> {
 	private String name;
-	private String category;
 	private String description;
 	protected T defaultValue;
 	protected T value;
@@ -20,11 +18,6 @@ public abstract class AbstractMQOption<O extends AbstractMQOption<O, T>, T> impl
 	@Override
 	public String getName(){
 		return name;
-	}
-
-	@Override
-	public String getCategory() {
-		return category;
 	}
 
 	@Override
@@ -43,13 +36,6 @@ public abstract class AbstractMQOption<O extends AbstractMQOption<O, T>, T> impl
 		return self();
 	}
 
-	public O withCategory(String category){
-		this.category = StringUtils.trim(category);
-		Validate.notEmpty(this.category);
-
-		return self();
-	}
-
 	public O withDescription(String description){
 		this.description = description;
 		return self();
@@ -64,8 +50,8 @@ public abstract class AbstractMQOption<O extends AbstractMQOption<O, T>, T> impl
 		return self();
 	}
 
-	public O parse(ConfigSource source){
-		value = getValue(source);
+	public O parse(Configuration configuration) {
+		getValue(configuration);
 		check();
 
 		return self();
@@ -75,6 +61,6 @@ public abstract class AbstractMQOption<O extends AbstractMQOption<O, T>, T> impl
 		return (O) this;
 	}
 
-	protected abstract T getValue(ConfigSource source);
+	protected abstract void getValue(Configuration configuration);
 	protected abstract void check();
 }

@@ -1,13 +1,11 @@
 package io.micromq.config;
 
+import io.micromq.config.option.MQIntEnumOption;
 import io.micromq.config.option.MQIntOption;
 import io.micromq.config.option.MQOption;
 import io.micromq.queue.MQQueue;
-import org.apache.commons.lang3.Validate;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class QueueManager implements ConfigSource.Listener{
@@ -58,33 +56,40 @@ public final class QueueManager implements ConfigSource.Listener{
     }
 
     private int getQueueAckMode(String queue) {
-        MQOption<Integer> option = new MQIntOption().withName(queue + ".ackMode")
-                .withCategory(CONFIG_TYPE).withDescription("queue ack mode")
-                .withDefaultValue(1).withMinValue(PULL_WITHOUT_ACK).withMaxValue(PULL_WITH_ACK).parse(source);
-
-        return option.value();
+        return new MQIntEnumOption().withName(queue + ".ackMode")
+                .withDescription("queue ack mode")
+                .withDefaultValue(PULL_WITHOUT_ACK)
+                .withValidValues(new HashSet<Integer>() {
+                    {
+                        add(PULL_WITHOUT_ACK);
+                        add(PULL_WITH_ACK);
+                    }
+                })
+                .parse(source.getConfig(CONFIG_TYPE))
+                .value();
     }
 
     private int getQueueAckTimeout(String queue) {
-        MQOption<Integer> option = new MQIntOption().withName(queue + ".ackTimeout")
-                .withCategory(CONFIG_TYPE).withDescription("queue ack timeout threshold")
-                .withDefaultValue(3).withMinValue(1).withMaxValue(30).parse(source);
-
-        return option.value();
+        return new MQIntOption().withName(queue + ".ackTimeout")
+                .withDescription("queue ack timeout threshold")
+                .withDefaultValue(3).withMinValue(1).withMaxValue(30)
+                .parse(source.getConfig(CONFIG_TYPE))
+                .value();
     }
 
     private int getQueueSaveMode(String queue){
-        MQOption<Integer> option = new MQIntOption().withName(queue + "." + "savingMode")
-                .withCategory(CONFIG_TYPE).withDescription("queue saving mode")
-                .withDefaultValue(ASYNC_SAVE).withMinValue(0).withMaxValue(1).parse(source);
-
-        return option.value();
+        return new MQIntOption().withName(queue + "." + "savingMode")
+                .withDescription("queue saving mode")
+                .withDefaultValue(ASYNC_SAVE).withMinValue(0).withMaxValue(1)
+                .parse(source.getConfig(CONFIG_TYPE))
+                .value();
     }
 
     private Boolean isActive(String queue) {
         MQOption<Integer> option = new MQIntOption().withName(queue + ".active")
-                .withCategory(CONFIG_TYPE).withDescription("queue is active or not")
-                .withDefaultValue(0).withMinValue(0).withMaxValue(1).parse(source);
+                .withDescription("queue is active or not")
+                .withDefaultValue(0).withMinValue(0).withMaxValue(1)
+                .parse(source.getConfig(CONFIG_TYPE));
 
         return option.value() == 1;
     }

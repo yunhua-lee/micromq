@@ -2,8 +2,9 @@ package io.micromq.config.option;
 
 import io.micromq.common.MQCode;
 import io.micromq.common.MQRuntimeException;
-import io.micromq.config.ConfigSource;
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.Validate;
+
 
 /**
  * @Desctiption
@@ -26,13 +27,8 @@ public class MQIntOption extends AbstractMQOption<MQIntOption, Integer> {
 	}
 
 	@Override
-	protected Integer getValue(ConfigSource source) {
-		if( defaultValue == null ) {
-			return source.getConfig(getCategory()).getInt(getName());
-		}
-		else {
-			return source.getConfig(getCategory()).getInt(getName(), defaultValue);
-		}
+	protected void getValue(Configuration configuration) {
+		value = configuration.getInt(getName(), defaultValue);
 	}
 
 	@Override

@@ -3,7 +3,6 @@ package io.micromq.config;
 import io.micromq.config.option.MQIntOption;
 import io.micromq.config.option.MQOption;
 import io.micromq.log.MQLog;
-import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,11 +47,11 @@ public final class RuntimeConfig implements ConfigSource.Listener {
             defaultValue = processorNumber;
         }
 
-        MQOption<Integer> option = new MQIntOption().withName(ASYNC_MESSAGE_SAVING_THREAD_NUMBER)
-                .withCategory(CONFIG_TYPE).withDescription("async message saving thread number")
-                .withDefaultValue(defaultValue).withMinValue(1).withMaxValue(64).parse(source);
-
-        return option.value();
+        return new MQIntOption().withName(ASYNC_MESSAGE_SAVING_THREAD_NUMBER)
+                .withDescription("async message saving thread number")
+                .withDefaultValue(defaultValue).withMinValue(1).withMaxValue(64)
+                .parse(source.getConfig(CONFIG_TYPE))
+                .value();
     }
 
     public int getAsyncMessageSavingRate() {
@@ -60,8 +59,9 @@ public final class RuntimeConfig implements ConfigSource.Listener {
         int defaultValue = 20000 / threadNumber;
 
         MQOption<Integer> option = new MQIntOption().withName(ASYNC_MESSAGE_SAVING_RATE)
-                .withCategory(CONFIG_TYPE).withDescription("async message saving rate")
-                .withDefaultValue(defaultValue).withMinValue(100).withMaxValue(20000).parse(source);
+                .withDescription("async message saving rate")
+                .withDefaultValue(defaultValue).withMinValue(100).withMaxValue(20000)
+                .parse(source.getConfig(CONFIG_TYPE));
 
         if (option.value() > 1000) {
             MQLog log = MQLog.build("Too large rate may cause MySQL 'max_allowed_packet' related error")
@@ -74,27 +74,27 @@ public final class RuntimeConfig implements ConfigSource.Listener {
     }
 
     public int getAsyncMessageSavingPeriod() {
-        MQOption<Integer> option = new MQIntOption().withName(ASYNC_MESSAGE_SAVING_PERIOD)
-                .withCategory(CONFIG_TYPE).withDescription("async message saving period")
-                .withDefaultValue(1000).withMinValue(100).withMaxValue(2000).parse(source);
-
-        return option.value();
+        return new MQIntOption().withName(ASYNC_MESSAGE_SAVING_PERIOD)
+                .withDescription("async message saving period")
+                .withDefaultValue(1000).withMinValue(100).withMaxValue(2000)
+                .parse(source.getConfig(CONFIG_TYPE))
+                .value();
     }
 
     public int getReceiptSavingPeriod() {
-        MQOption<Integer> option = new MQIntOption().withName(RECEIPT_SAVING_PERIOD)
-                .withCategory(CONFIG_TYPE).withDescription("receipt saving period")
-                .withDefaultValue(1000).withMinValue(100).withMaxValue(2000).parse(source);
-
-        return option.value();
+        return new MQIntOption().withName(RECEIPT_SAVING_PERIOD)
+                .withDescription("receipt saving period")
+                .withDefaultValue(1000).withMinValue(100).withMaxValue(2000)
+                .parse(source.getConfig(CONFIG_TYPE))
+                .value();
     }
 
     public int getMessageExpireHours(){
-        MQOption<Integer> option = new MQIntOption().withName(MESSAGE_EXPIRE_HOURS)
-                .withCategory(CONFIG_TYPE).withDescription("message expired hours")
-                .withDefaultValue(48).withMinValue(24).withMaxValue(7 * 24).parse(source);
-
-        return option.value();
+        return new MQIntOption().withName(MESSAGE_EXPIRE_HOURS)
+                .withDescription("message expired hours")
+                .withDefaultValue(48).withMinValue(24).withMaxValue(7 * 24)
+                .parse(source.getConfig(CONFIG_TYPE))
+                .value();
     }
 }
 

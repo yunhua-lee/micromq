@@ -1,12 +1,12 @@
 package io.micromq.config;
 
-import io.micromq.log.MQLog;
+import io.micromq.config.option.*;
 import io.micromq.util.SysUtils;
 import org.apache.commons.configuration.Configuration;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashSet;
 
 public final class ServerConfig {
     private static final Logger logger = LoggerFactory.getLogger(ServerConfig.class);
@@ -40,37 +40,34 @@ public final class ServerConfig {
     }
 
     public String getServerName() {
-        String name = configuration.getString(SERVER_NAME);
-        if (StringUtils.isBlank(name)) {
-            // If not configured, use "host:port"
-            name = SysUtils.getHostName() + ":" + getPort();
-        } else {
-            name = StringUtils.trim(name);
-        }
+        String defaultName = SysUtils.getHostName() + ":" + getPort();
 
-        return name;
+        return new MQStringOption().withName(SERVER_NAME)
+                .withDescription("server name").withDefaultValue(defaultName)
+                .parse(configuration)
+                .value();
     }
 
     public int getPort() {
-        int port = configuration.getInt(SERVER_PORT, DEFAULT_PORT);
-        Validate.inclusiveBetween(1024, 65535, port, "port should be between 1024 and 65535");
-
-        return port;
+        return new MQIntOption().withName(SERVER_PORT)
+                .withDescription("queue ack timeout threshold")
+                .withDefaultValue(DEFAULT_PORT).withMinValue(1024).withMaxValue(65535)
+                .parse(configuration)
+                .value();
     }
 
     public String getServerType() {
-        String role = configuration.getString(SERVER_ROLE, SINGLE_SERVER);
-        if (GROUP_SERVER.equals(role)
-                || SINGLE_SERVER.equals(role)) {
-            return role;
-        }
-
-        MQLog log = new MQLog("invalid config")
-                .p("name", SERVER_ROLE)
-                .p("value", role)
-                .p("valid values", GROUP_SERVER + "," + SINGLE_SERVER);
-
-        throw new IllegalArgumentException(log.toString());
+        return new MQStringEnumOption().withName(SERVER_ROLE)
+                .withDescription("server role")
+                .withDefaultValue(SINGLE_SERVER)
+                .withValidValues(new HashSet<String>() {
+                    {
+                        add(SINGLE_SERVER);
+                        add(GROUP_SERVER);
+                    }
+                })
+                .parse(configuration)
+                .value();
     }
 
     public String getAdminIP(){
