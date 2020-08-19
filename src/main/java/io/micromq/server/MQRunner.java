@@ -24,7 +24,7 @@ public class MQRunner implements ApplicationRunner{
         PropertiesConfiguration configuration = new PropertiesConfiguration(file);
         ServerConfig.build(configuration);
 
-        String type = ServerConfig.INSTANCE().getServerType();
+        String type = ServerConfig.INSTANCE().getServerRole();
         ConfigSource configSource;
         if(ServerConfig.SINGLE_SERVER.equalsIgnoreCase(type)){
             //load config from local file

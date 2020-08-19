@@ -17,7 +17,7 @@ public class StatusController {
         MQNode node = MQNode.INSTANCE();
 
         response.setServerName(ServerConfig.INSTANCE().getServerName());
-        response.setRole(ServerConfig.INSTANCE().getServerType());
+        response.setRole(ServerConfig.INSTANCE().getServerRole());
         response.setActive(node.isActive());
         response.setSupportPull(node.supportPull());
         response.setSupportPublish(node.supportPublish());

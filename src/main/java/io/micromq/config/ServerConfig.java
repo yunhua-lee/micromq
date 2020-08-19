@@ -20,6 +20,23 @@ public final class ServerConfig {
 
     public static final int DEFAULT_PORT = 8080;
 
+    private final MQStringOption serverNameOption = new MQStringOption().withName(SERVER_NAME)
+            .withDescription("server name")
+            .withDefaultValue(SysUtils.getHostName() + ":" + getPort());
+
+    private final MQIntOption serverPortOption = new MQIntOption().withName(SERVER_PORT)
+            .withDescription("queue ack timeout threshold")
+            .withDefaultValue(DEFAULT_PORT).withMinValue(1024).withMaxValue(65535);
+
+    private final MQEnumOption<String> serverRoleOption = new MQStringEnumOption()
+            .withName(SERVER_ROLE).withDescription("server role")
+            .withDefaultValue(SINGLE_SERVER)
+            .withValidValues(new HashSet<String>(){{
+                    add(SINGLE_SERVER);
+                    add(GROUP_SERVER);
+            }});
+
+
     private static volatile ServerConfig instance;
 
     private Configuration configuration;
@@ -40,34 +57,15 @@ public final class ServerConfig {
     }
 
     public String getServerName() {
-        String defaultName = SysUtils.getHostName() + ":" + getPort();
-
-        return new MQStringOption().withName(SERVER_NAME)
-                .withDescription("server name").withDefaultValue(defaultName)
-                .parse(configuration)
-                .value();
+        return serverNameOption.parse(configuration).value();
     }
 
     public int getPort() {
-        return new MQIntOption().withName(SERVER_PORT)
-                .withDescription("queue ack timeout threshold")
-                .withDefaultValue(DEFAULT_PORT).withMinValue(1024).withMaxValue(65535)
-                .parse(configuration)
-                .value();
+        return serverPortOption.parse(configuration).value();
     }
 
-    public String getServerType() {
-        return new MQStringEnumOption().withName(SERVER_ROLE)
-                .withDescription("server role")
-                .withDefaultValue(SINGLE_SERVER)
-                .withValidValues(new HashSet<String>() {
-                    {
-                        add(SINGLE_SERVER);
-                        add(GROUP_SERVER);
-                    }
-                })
-                .parse(configuration)
-                .value();
+    public String getServerRole() {
+        return serverRoleOption.parse(configuration).value();
     }
 
     public String getAdminIP(){
