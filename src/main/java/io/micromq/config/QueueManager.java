@@ -18,7 +18,7 @@ public final class QueueManager implements ConfigSource.Listener{
     private static volatile QueueManager instance;
 
     private final ConfigSource source;
-    private final Map<String, MQQueue> queueMap = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, MQQueue> queueMap = new ConcurrentHashMap<>();
 
     private QueueManager(ConfigSource source){
         this.source = source;
@@ -45,7 +45,11 @@ public final class QueueManager implements ConfigSource.Listener{
             queue.setActive(isActive(name));
             queue.setPullMode(getQueueAckMode(name));
             queue.setSaveMode(getQueueSaveMode(name));
-            queueMap.put(name, queue);
+
+            MQQueue old = queueMap.putIfAbsent(name, queue);
+            if( old != null ){
+                queue = old;
+            }
         }
 
         return queue;

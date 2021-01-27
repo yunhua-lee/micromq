@@ -56,8 +56,10 @@ public final class ClientManager implements ConfigSource.Listener {
         MQClient client = clientMap.get(clientName);
         if(client == null){
             client = buildClient(clientName);
-            clientMap.putIfAbsent(clientName, client);
-            client = clientMap.get(clientName);
+            MQClient old = clientMap.putIfAbsent(clientName, client);
+            if( old != null){
+                client = old;
+            }
         }
 
         return client;

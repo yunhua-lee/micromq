@@ -67,8 +67,10 @@ public class MQClient {
         if(operation == null){
             MQQueue queue = QueueManager.INSTANCE().getQueue(queueName);
             operation = MQOperation.build(this, queue);
-            operationMap.putIfAbsent(queueName, operation);
-            operation = operationMap.get(queueName);
+            MQOperation old = operationMap.putIfAbsent(queueName, operation);
+            if( old != null ){
+                operation = old;
+            }
         }
 
         return operation;
