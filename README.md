@@ -22,7 +22,7 @@ It is a learning project, and not well tested. If you want to deploy it on produ
 You can extend the following features:
 1. storage: just implement IMessageDao and IReceiptDao, and then initiate storage at MQNode.build function.
 2. group: just implement NodeGroupStrategy, and then initiate group strategy at MQNode.build function.
-3. queue mode: implement IPull to add new kind of pull operation, implement ISave to ad new kind of save mode for queue.
+3. queue mode: implement IPull to add new kind of pull operation, implement ISave to add new kind of save mode for queue.
 4. more functions: add more Spring Boot controllers to support new functions.
 
 # Maintainers
