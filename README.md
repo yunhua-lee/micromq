@@ -26,7 +26,7 @@ You can extend the following features:
 4. more functions: add more Spring Boot controllers to support new functions.
 
 # Maintainers
-Wallace &lt;yunhua.lee@gmail.com&gt;
+Watson &lt;yunhua.lee@gmail.com&gt;
 
 # License
 Apache License 2.0
